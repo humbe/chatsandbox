@@ -1,8 +1,11 @@
 from mlx_lm import load, stream_generate
 
 from tools import call_tool, get_tool_instructions
+from memory_tool import init_memory_wrapper
 
 model, tokenizer = load("mlx-community/Qwen3.8-27B-Uncensored-OptiQ-4bit")
+
+init_memory_wrapper(tokenizer=tokenizer, model=model)
 
 messages = [
     {

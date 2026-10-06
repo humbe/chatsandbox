@@ -1,13 +1,14 @@
 import json
 import inspect
 import subprocess
+from memory_tool import get_memory
 
 class AgentTools:
     def remember(self, memory:str):
-        print("Creating a memory")
+        get_memory().store(memory)
 
     def recall(self, topic:str) -> str:
-        return "my name is bob."
+        return get_memory().search(topic)
 
     def shell(self, command:str) -> str:
         """Runs a command in the unix shell."""
@@ -73,15 +74,15 @@ def get_tool_instructions() -> str:
         if not callable(tool):
             continue
 
-        desc += f"{name}: "
+        desc += f"tool_name:{name} params:["
 
         sig = inspect.signature(tool)
         for param_name, param_obj in sig.parameters.items():
             desc += f"{param_name} "
         if tool.__doc__ != None:
-            desc += f"\n\t({tool.__doc__})\n"
+            desc += f"]\n\t({tool.__doc__})\n"
         else:
-            desc += "\n"
+            desc += "]\n"
 
     desc += "When calling a tool, output json in this format " \
     "{\"call\": \"tool_name\", \"args\": {\"param_name\": value, ...}}"

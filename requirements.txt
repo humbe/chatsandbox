@@ -1,1 +1,7 @@
 mlx_lm
+mem0ai
+mem0ai[nlp]
+mem0ai[extras]
+qdrant-client
+sentence-transformers
+langchain_core

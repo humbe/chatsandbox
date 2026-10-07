@@ -17,10 +17,7 @@ class MLXChatModel(BaseChatModel):
         self.model = model
 
     def _generate(self, messages: List[BaseMessage], stop: Optional[List[str]] = None, run_manager: Any = None, **kwargs) -> ChatResult:
-        mlx_messages = [{
-            "role": "system",
-            "content": "Include the input data in your final response as JSON without thinking too much."
-        }]
+        mlx_messages = []
 
         for msg in messages:
             if msg.type == "human":
@@ -33,8 +30,13 @@ class MLXChatModel(BaseChatModel):
                     "role": "assistant",
                     "content": msg.content
                 })
+            elif msg.type == "system":
+                mlx_messages.append({
+                    "role": "system",
+                    "content": msg.content
+                })
 
-        print(f"mem0 asked {mlx_messages} kwargs={kwargs}")
+        print(f"mem0 asked {mlx_messages}")
 
         prompt = self.tokenizer.apply_chat_template(mlx_messages, tokenize=False, add_generation_prompt=True)
 
@@ -42,10 +44,8 @@ class MLXChatModel(BaseChatModel):
 
         print(f"mlx responded {response_text}")
 
-        final_response = response_text.split("</think>")[-1]
-
         # Wrap in LangChain format
-        message = AIMessage(content=final_response.strip())
+        message = AIMessage(content=response_text.strip())
         generation = ChatGeneration(message=message)
         return ChatResult(generations=[generation])
 
